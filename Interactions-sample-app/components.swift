@@ -11,6 +11,19 @@ struct ComponentList: Scene {
         NavigationLink(key: .n5, label: "NumberField", destination: NumberFieldDemo())
         NavigationLink(key: .n6, label: "List", destination: ListDemo())
         NavigationLink(key: .n7, label: "Slider", destination: SliderDemo())
+
+        List(.n0) {
+            NavigationStack {
+                NavigationLink("In list") {
+                    Text("List")
+                }
+            }
+        }
+        NavigationStack {
+            NavigationLink(key: .n8, "Outside") {
+                Text("Outside")
+            }
+        }
     }
 }
 

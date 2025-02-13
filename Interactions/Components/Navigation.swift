@@ -23,14 +23,16 @@ public struct NavigationLink: Interaction, Activatable {
     let title: String
     
     @LegacyEnvironment(\.settings) var settings
+    @Environment(\.navigate) var navigate
     
     public func activate() {
-        AppRenderer.shared.setScene(destination, title: title)
+        navigate(destination)
     }
+
     public var body: some Renderable {
         if key != nil {
-            Button(key!, label) {
-                activate()
+            Button(key!, label) { [navigate] in
+                navigate(destination)
             }
             .tint()
         }
@@ -56,6 +58,35 @@ public struct NavigationLink: Interaction, Activatable {
         self.label = label
         self.title = destination.title
         self.destination = destination
+    }
+
+    public init(key: Key? = nil, _ label: String, @InteractionBuilder destination: () -> Renderable) {
+        self.key = key
+        self.label = label
+        let destination = destination()
+        self.title = (destination as? any Scene)?.title ?? ""
+        self.destination = destination
+    }
+}
+
+public struct NavigationStack: Interaction, @unchecked Sendable {
+    @InternalState private var navigationPath: [Renderable]
+    let content: Renderable
+
+    public var body: some Renderable {
+        if let last = navigationPath.last {
+            last
+                .environment(\.navigate, { navigationPath.append($0) })
+        }
+        else {
+            content
+                .environment(\.navigate, { navigationPath.append($0) })
+        }
+    }
+
+    public init(@InteractionBuilder content: () -> Renderable, file: String = #file, line: Int = #line) {
+        self.content = content()
+        _navigationPath = InternalState<[Renderable]>(wrappedValue: [Renderable](), id: "\(file):\(line)")
     }
 }
 

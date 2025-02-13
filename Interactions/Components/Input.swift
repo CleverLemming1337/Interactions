@@ -22,8 +22,6 @@ public struct Button: Interaction, Formattable, Activatable {
         self.label = label
         self.action = action
         self.showShortcut = showShortcut
-
-        bindActivation(with: key)
     }
     
     public init(_ label: String, _ action: @escaping () -> Void) {
@@ -31,6 +29,14 @@ public struct Button: Interaction, Formattable, Activatable {
         self.label = label
         self.action = action
         self.showShortcut = false
+    }
+
+    public func render() -> String {
+        if let key = key {
+            bindActivation(with: key)
+        }
+
+        return body.render()
     }
     
     public var body: some Renderable {

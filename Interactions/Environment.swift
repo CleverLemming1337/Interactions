@@ -20,6 +20,11 @@ public extension DependencyValues {
         get { self[DismissKey.self] }
         set { self[DismissKey.self] = newValue }
     }
+
+    var navigate: @Sendable (Renderable) -> Void {
+        get { self[NavigateKey.self] }
+        set { self[NavigateKey.self] = newValue }
+    }
 }
 
 private enum AccentColorKey: DependencyKey {
@@ -30,6 +35,11 @@ private enum AccentColorKey: DependencyKey {
 private enum DismissKey: DependencyKey {
     static let liveValue: Hook = { AppRenderer.shared.back() }
     static let testValue: Hook = { AppRenderer.shared.back() }
+}
+
+private enum NavigateKey: DependencyKey {
+    static let liveValue: @Sendable (Renderable) -> Void = { AppRenderer.shared.setScene($0) }
+    static let testValue: @Sendable (Renderable) -> Void = { AppRenderer.shared.setScene($0) }
 }
 
 public extension Renderable {
